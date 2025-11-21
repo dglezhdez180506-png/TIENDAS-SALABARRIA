@@ -3,161 +3,215 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mi Mini-Tienda</title>
+<title>Mi Tienda PRO</title>
 <style>
-body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
-h1 { text-align: center; }
-.topbar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-.catalogo { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
-.item { background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative; }
-.item img { width: 100%; max-height: 180px; object-fit: contain; border-radius: 8px; }
-.item video, .item iframe { width: 100%; max-height: 180px; margin-top: 5px; }
-.item button { margin-top: 5px; padding: 8px; width: 100%; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; }
-.edit-btn { background: #2196F3; margin-top: 5px; }
-.delete-btn { background: #E53935; margin-top: 5px; }
-#carrito, #pago, #admin { background: #fff; padding: 15px; margin-top: 20px; border-radius: 10px; }
-input, select { margin: 5px 0; padding: 8px; width: 100%; }
-.cantidad-box { display: flex; gap: 5px; align-items: center; }
-.cantidad-box button { width: 30px; padding: 5px; }
-.remove-btn { background: #d9534f; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
-.publico-banner { background:#222; color:#fff; padding:10px; text-align:center; margin-bottom:20px; border-radius:8px; }
-.carousel-btn { width: 30px; padding: 5px; margin-top:5px; background:#888; color:#fff; border:none; border-radius:5px; cursor:pointer; }
+  body { font-family: 'Segoe UI', sans-serif; margin:0; background:#f2f2f2; }
+  header { background:#4C8BFF; padding:15px; color:#fff; font-size:22px; text-align:center; box-shadow:0 2px 5px rgba(0,0,0,0.2); }
+  
+  /* CATÁLOGO */
+  #catalogo { padding:20px; display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px; }
+  .card { background:#fff; padding:15px; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.15); transition:0.3s; }
+  .card:hover { transform:translateY(-5px); }
 
-@media (max-width: 400px) {
-  .item { padding: 10px; }
-  .cantidad-box button { width: 25px; padding: 4px; }
-}
+  .carousel { position:relative; }
+  .carousel img { width:100%; height:220px; object-fit:cover; border-radius:10px; }
+  .btn-prev, .btn-next {
+    position:absolute; top:50%; transform:translateY(-50%);
+    background:rgba(0,0,0,0.5); color:#fff; border:none;
+    padding:8px 12px; cursor:pointer; border-radius:50%; font-size:14px;
+  }
+  .btn-prev { left:10px; }
+  .btn-next { right:10px; }
+
+  .miniaturas { display:flex; justify-content:center; gap:5px; margin-top:8px; }
+  .miniaturas img { width:40px; height:40px; object-fit:cover; border-radius:6px; cursor:pointer; opacity:0.6; }
+  .miniaturas img.active { border:2px solid #4C8BFF; opacity:1; }
+
+  .precio { color:#2E7D32; font-weight:bold; font-size:20px; }
+  .btn-agregar {
+    width:100%; background:#4C8BFF; color:white; border:none; padding:10px;
+    margin-top:10px; border-radius:8px; font-size:16px; cursor:pointer;
+  }
+  .btn-agregar:hover { background:#3A6FD9; }
+
+  /* CARRITO */
+  #carritoPanel {
+    position:fixed; right:-400px; top:0; width:350px; height:100%;
+    background:#fff; box-shadow:-3px 0 6px rgba(0,0,0,0.2);
+    padding:20px; transition:0.3s; overflow-y:auto;
+  }
+  #carritoPanel.open { right:0; }
+  .carrito-item { border-bottom:1px solid #ddd; padding:10px 0; }
+
+  /* FORMULARIO ENVÍO */
+  #formEnvio { background:#fff; padding:20px; border-radius:12px; width:90%; max-width:450px; margin:20px auto; box-shadow:0 2px 6px rgba(0,0,0,0.2); }
+  input, select, textarea { width:100%; padding:10px; margin:8px 0; border-radius:8px; border:1px solid #bbb; }
+  button { cursor:pointer; }
+  #btnPagar {
+    width:100%; background:#2E7D32; color:white; padding:12px;
+    border:none; border-radius:8px; font-size:17px;
+  }
+
+  /* ADMIN */
+  #adminPanel { background:#fff; padding:20px; margin:20px; border-radius:12px; }
+  #adminPanel input, #adminPanel textarea { width:100%; margin-bottom:10px; }
+  #btnGuardar { background:#4C8BFF; color:#fff; padding:10px; border:none; border-radius:8px; }
+
+  .floating-cart {
+    position:fixed; bottom:20px; right:20px; background:#4C8BFF; color:white;
+    padding:15px; border-radius:50%; font-size:22px; cursor:pointer;
+    box-shadow:0 3px 6px rgba(0,0,0,0.3);
+  }
 </style>
 </head>
 <body>
+<header>✨ Mi Tienda Profesional ✨</header>
 
-<h1>Mi Mini-Tienda</h1>
-<div id="bannerPublico"></div>
+<!-- BOTÓN CARRITO -->
+<div class="floating-cart" onclick="toggleCarrito()">🛒</div>
 
-<div class="topbar">
-  <button onclick="mostrarCatalogo()">Ver Catálogo</button>
-  <button onclick="mostrarCarrito()">Carrito</button>
-  <button onclick="mostrarAdmin()">Admin</button>
+<!-- CATÁLOGO -->
+<div id="catalogo"></div>
+
+<!-- PANEL CARRITO -->
+<div id="carritoPanel">
+  <h2>Carrito</h2>
+  <div id="listaCarrito"></div>
+  <h3>Total: $<span id="totalCarrito">0</span></h3>
+  <button onclick="mostrarEnvio()">Proceder al envío</button>
 </div>
 
-<div id="catalogo" class="catalogo"></div>
-<div id="carrito"></div>
-<div id="pago"></div>
-<div id="admin">
-  <h2>Agregar/Editar Producto</h2>
-  <input type="text" id="nombre" placeholder="Nombre">
-  <input type="number" id="precio" placeholder="Precio">
-  <input type="text" id="imagen" placeholder="URL imagen">
-  <input type="text" id="categoria" placeholder="Categoría">
-  <input type="text" id="descripcion" placeholder="Descripción">
-  <input type="text" id="origen" placeholder="Origen">
-  <label><input type="checkbox" id="envioGratis"> Envío Gratis</label>
-  <button onclick="agregarProducto()">Guardar Producto</button>
+<!-- FORMULARIO DE ENVÍO -->
+<div id="formEnvio" style="display:none;">
+  <h2>Datos de Envío</h2>
+  <input id="nombreCliente" placeholder="Tu nombre">
+  <input id="telefonoCliente" placeholder="Teléfono">
+  <input id="direccionCliente" placeholder="Dirección completa">
+
+  <h3>Método de pago</h3>
+  <p>Deposita a esta cuenta:</p>
+  <p><b>Banco:</b> banCoppel</p>
+  <p><b>Nombre:</b> Diego Salabarría</p>
+  <p><b>CLABE:</b> 137050103711041903</p>
+
+  <button id="btnPagar" onclick="finalizarPedido()">Finalizar pedido</button>
+</div>
+
+<!-- PANEL ADMIN -->
+<div id="adminPanel">
+  <h2>ADMIN - Agregar producto</h2>
+
+  <input id="pNombre" placeholder="Nombre del producto">
+  <input id="pPrecio" placeholder="Precio" type="number">
+  <input id="pImagenes" placeholder="URLs de imágenes separadas por coma">
+  <input id="pCategoria" placeholder="Categoría / Marca">
+  <input id="pStock" placeholder="Stock disponible" type="number">
+  <input id="pOrigen" placeholder="Origen (China, México, USA...)">
+  <label><input type="checkbox" id="pEnvio"> Envío gratis</label>
+  <textarea id="pDesc" placeholder="Descripción"></textarea>
+  <button id="btnGuardar" onclick="guardarProducto()">Guardar producto</button>
 </div>
 
 <script>
-// Lista inicial de productos
-let productos = [
-  { nombre:"Playera Cuidado con el Perro", precio:250, imagen:"imagenes/playera.jpg", descripcion:"Playera original talla M", envioGratis:true, origen:"CDMX" },
-  { nombre:"Jeans Azul", precio:400, imagen:"imagenes/jeans.jpg", descripcion:"Jeans original talla 32", envioGratis:false, origen:"Monterrey" }
-];
-
+let productos = [];
 let carrito = [];
-let editIndex = null;
 
-// Funciones de visualización
-function mostrarCatalogo() {
-  document.getElementById("catalogo").style.display="grid";
-  document.getElementById("carrito").style.display="none";
-  document.getElementById("admin").style.display="none";
-  renderizarCatalogo();
-}
-function mostrarCarrito() {
-  document.getElementById("catalogo").style.display="none";
-  document.getElementById("carrito").style.display="block";
-  document.getElementById("admin").style.display="none";
-  renderizarCarrito();
-}
-function mostrarAdmin() {
-  document.getElementById("catalogo").style.display="none";
-  document.getElementById("carrito").style.display="none";
-  document.getElementById("admin").style.display="block";
+// GUARDAR PRODUCTO
+function guardarProducto(){
+  let obj = {
+    nombre: pNombre.value,
+    precio: Number(pPrecio.value),
+    imagenes: pImagenes.value.split(","),
+    categoria: pCategoria.value,
+    stock: Number(pStock.value),
+    origen: pOrigen.value,
+    envio: pEnvio.checked,
+    desc: pDesc.value
+  };
+
+  productos.push(obj);
+  renderCatalogo();
+  alert("Producto agregado ✔");
 }
 
-// Renderizar catálogo
-function renderizarCatalogo() {
-  const cont = document.getElementById("catalogo");
-  cont.innerHTML = "";
-  productos.forEach((p,index)=>{
-    cont.innerHTML += `<div class="item">
-      <img src="${p.imagen}" alt="${p.nombre}">
-      <h3>${p.nombre}</h3>
-      <p>${p.descripcion}</p>
-      <p>Precio: $${p.precio}</p>
-      <p>Origen: ${p.origen}</p>
-      ${p.envioGratis? "<p style='color:green;'><b>¡Envío gratis!</b></p>":""}
-      <button onclick="agregarAlCarrito(${index})">Agregar al carrito</button>
-    </div>`;
-  });
-}
+// MOSTRAR CATÁLOGO
+function renderCatalogo(){
+  catalogo.innerHTML = "";
 
-// Carrito
-function agregarAlCarrito(index) {
-  let producto = {...productos[index], cantidad:1};
-  let existe = carrito.find(p=>p.nombre===producto.nombre);
-  if(existe) { existe.cantidad +=1; } else { carrito.push(producto); }
-  alert("Producto agregado al carrito");
-}
+  productos.forEach((p, i)=>{
+    catalogo.innerHTML += `
+      <div class='card'>
+        <div class='carousel' id='car${i}'>
+          <img src='${p.imagenes[0]}' id='img${i}'>
+          <button class='btn-prev' onclick='cambiarImg(${i}, -1)'>❮</button>
+          <button class='btn-next' onclick='cambiarImg(${i}, 1)'>❯</button>
+          <div class='miniaturas'>
+            ${p.imagenes.map((x,j)=>`<img src='${x}' onclick='selImg(${i},${j})' id='thumb${i}_${j}'>`).join("")}
+          </div>
+        </div>
 
-function renderizarCarrito() {
-  const cont = document.getElementById("carrito");
-  cont.innerHTML = "<h2>Carrito</h2>";
-  if(carrito.length===0){ cont.innerHTML += "<p>Carrito vacío</p>"; return; }
-  let total = 0;
-  carrito.forEach((p,index)=>{
-    let sub = p.precio*p.cantidad; total+=sub;
-    cont.innerHTML += `<li>${p.nombre} - $${p.precio} x ${p.cantidad} = $${sub}
-      <div class='cantidad-box'>
-        <button onclick="cambiarCantidad(${index}, '-')">-</button>
-        <span>${p.cantidad}</span>
-        <button onclick="cambiarCantidad(${index}, '+')">+</button>
-        <button class='remove-btn' onclick="eliminarDelCarrito(${index})">X</button>
+        <h3>${p.nombre}</h3>
+        <p class='precio'>$${p.precio}</p>
+        <p>${p.desc}</p>
+        <p><b>Marca:</b> ${p.categoria}</p>
+        <p><b>Stock:</b> ${p.stock}</p>
+        <p><b>Origen:</b> ${p.origen}</p>
+        ${p.envio ? "<span style='color:green;font-weight:bold;'>✨ Envío gratis</span>" : ""}
+
+        <button class='btn-agregar' onclick='agregarCarrito(${i})'>Agregar al carrito</button>
       </div>
-    </li>`;
+    `;
   });
-  cont.innerHTML += `<p><b>Total: $<span id="total">${total}</span></b></p>`;
 }
 
-// Carrito helpers
-function cambiarCantidad(index,op) {
-  if(op==='-'){ carrito[index].cantidad-=1; if(carrito[index].cantidad<=0) carrito.splice(index,1); }
-  else{ carrito[index].cantidad+=1; }
-  renderizarCarrito();
-}
-function eliminarDelCarrito(index){ carrito.splice(index,1); renderizarCarrito(); }
-
-// Admin
-function agregarProducto() {
-  const n=document.getElementById("nombre").value;
-  const p=document.getElementById("precio").value;
-  const img=document.getElementById("imagen").value;
-  const cat=document.getElementById("categoria").value;
-  const desc=document.getElementById("descripcion").value;
-  const origen=document.getElementById("origen").value;
-  const envio=document.getElementById("envioGratis").checked;
-  if(!n||!p||!img||!cat) return alert("Completa todos los campos");
-  if(editIndex!==null){
-    productos[editIndex]={nombre:n,precio:Number(p),imagen:img,categoria:cat,descripcion:desc,envioGratis:envio,origen:origen};
-    editIndex=null;
-  } else {
-    productos.push({nombre:n,precio:Number(p),imagen:img,categoria:cat,descripcion:desc,envioGratis:envio,origen:origen});
-  }
-  renderizarCatalogo();
-  alert("Producto agregado/actualizado");
+// CARRUSEL
+function cambiarImg(i, dir){
+  let p = productos[i];
+  let img = document.getElementById("img"+i);
+  let idx = p.imagenes.indexOf(img.src);
+  idx = idx + dir;
+  if(idx < 0) idx = p.imagenes.length-1;
+  if(idx >= p.imagenes.length) idx = 0;
+  img.src = p.imagenes[idx];
 }
 
-// Inicial
-mostrarCatalogo();
+function selImg(i,j){
+  document.getElementById("img"+i).src = productos[i].imagenes[j];
+}
+
+// CARRITO
+function toggleCarrito(){ carritoPanel.classList.toggle("open"); }
+
+function agregarCarrito(i){
+  carrito.push({...productos[i]});
+  renderCarrito();
+}
+
+function renderCarrito(){
+  listaCarrito.innerHTML="";
+  let total=0;
+
+  carrito.forEach((p,i)=>{
+    listaCarrito.innerHTML += `
+      <div class='carrito-item'>
+        ${p.nombre} - $${p.precio}
+      </div>`;
+    total += p.precio;
+  });
+
+  totalCarrito.textContent = total;
+}
+
+// ENVÍO
+function mostrarEnvio(){
+  formEnvio.style.display="block";
+  toggleCarrito();
+}
+
+function finalizarPedido(){
+  alert("Pedido enviado ✔ Te contactaré por WhatsApp");
+}
+
 </script>
 </body>
 </html>
