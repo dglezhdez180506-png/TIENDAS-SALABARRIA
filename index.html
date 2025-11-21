@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TIENDAS - SALABARRIA</title>
-<link rel="stylesheet" href="estilos.css">
+<title>Mi Mini-Tienda</title>
 <style>
 body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
 h1 { text-align: center; }
@@ -23,6 +22,7 @@ input, select { margin: 5px 0; padding: 8px; width: 100%; }
 .remove-btn { background: #d9534f; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
 .publico-banner { background:#222; color:#fff; padding:10px; text-align:center; margin-bottom:20px; border-radius:8px; }
 .carousel-btn { width: 30px; padding: 5px; margin-top:5px; background:#888; color:#fff; border:none; border-radius:5px; cursor:pointer; }
+
 @media (max-width: 400px) {
   .item { padding: 10px; }
   .cantidad-box button { width: 25px; padding: 4px; }
@@ -31,221 +31,133 @@ input, select { margin: 5px 0; padding: 8px; width: 100%; }
 </head>
 <body>
 
-<h1>Mi Mini Tienda</h1>
+<h1>Mi Mini-Tienda</h1>
 <div id="bannerPublico"></div>
 
 <div class="topbar">
-  <input type="text" id="busqueda" placeholder="Buscar producto..." oninput="filtrarProductos()">
-  <select id="filtroCat" onchange="filtrarProductos()">
-    <option value="">Todas las categorías</option>
-  </select>
+  <button onclick="mostrarCatalogo()">Ver Catálogo</button>
+  <button onclick="mostrarCarrito()">Carrito</button>
+  <button onclick="mostrarAdmin()">Admin</button>
 </div>
 
-<div class="catalogo" id="catalogo"></div>
-
-<div id="carrito">
-  <h2>Carrito</h2>
-  <ul id="lista-carrito"></ul>
-  <p>Total: $<span id="total">0</span> MXN</p>
-</div>
-
-<div id="pago">
-  <h3>Pagar / Enviar Pedido</h3>
-  <p>Transferencia o depósito a:</p>
-  <p><b>CuentaCLAVE:</b> 137050103711041903 </p>
-  <p><b>Banco:</b> BanCoppel</p>
-  <p>Después de realizar el pago, envía comprobante a WhatsApp:</p>
-  <a id="whatsappPago" target="_blank"><button>Enviar pedido por WhatsApp</button></a>
-</div>
-
+<div id="catalogo" class="catalogo"></div>
+<div id="carrito"></div>
+<div id="pago"></div>
 <div id="admin">
-  <h2>Panel del Vendedor</h2>
-  <input type="text" id="nombre" placeholder="Nombre del producto">
+  <h2>Agregar/Editar Producto</h2>
+  <input type="text" id="nombre" placeholder="Nombre">
   <input type="number" id="precio" placeholder="Precio">
-  <input type="text" id="imagenes" placeholder="URLs de imágenes (separadas por ,)">
-  <input type="text" id="video" placeholder="URL de video (opcional)">
+  <input type="text" id="imagen" placeholder="URL imagen">
   <input type="text" id="categoria" placeholder="Categoría">
   <input type="text" id="descripcion" placeholder="Descripción">
-  <input type="text" id="origen" placeholder="Origen del producto">
-  <input type="text" id="tiempoEntrega" placeholder="Tiempo de entrega (ej: 3-5 días)">
-  <input type="number" id="stock" placeholder="Stock disponible">
+  <input type="text" id="origen" placeholder="Origen">
   <label><input type="checkbox" id="envioGratis"> Envío Gratis</label>
-  <button onclick="agregarProducto()">Guardar</button>
+  <button onclick="agregarProducto()">Guardar Producto</button>
 </div>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const modoPublico = params.get("vista")==="catalogo";
-
-let productos = JSON.parse(localStorage.getItem("productos")) || [
-  { nombre:"10000mah banco de energia multifuncional", precio:100, imagenes:["https://down-mx.img.susercontent.com/file/mx-11134258-7r98o-lx8xoaaiezyj82, https://down-mx.img.susercontent.com/file/mx-11134207-81z1k-mfuvuqkg5n2ce5.webp, https://down-mx.img.susercontent.com/file/mx-11134207-81z1k-mfuw5tzqpjbba6.webp"], video:"", categoria:"electronico", descripcion:"fuente de energia portatil", envioGratis:true, origen:"Mexico", tiempoEntrega:"5-7 días", stock:11, imagenIndex:0},
-  { nombre:"Gorro Navideño", precio:90, imagenes:["https://i.imgur.com/rY2RkRR.jpeg"], video:"", categoria:"Ropa", descripcion:"Gorro divertido para navidad", envioGratis:false, origen:"Ciudad del Carmen, Campeche", tiempoEntrega:"2-4 días", stock:15, imagenIndex:0}
-  { nombre:"Gorro Navideño", precio:90, imagenes:["https://i.imgur.com/rY2RkRR.jpeg"], video:"", categoria:"Ropa", descripcion:"Gorro divertido para navidad", envioGratis:false, origen:"Ciudad del Carmen, Campeche", tiempoEntrega:"2-4 días", stock:15, imagenIndex:0}
-  { nombre:"Gorro Navideño", precio:90, imagenes:["https://i.imgur.com/rY2RkRR.jpeg"], video:"", categoria:"Ropa", descripcion:"Gorro divertido para navidad", envioGratis:false, origen:"Ciudad del Carmen, Campeche", tiempoEntrega:"2-4 días", stock:15, imagenIndex:0}
-  { nombre:"Gorro Navideño", precio:90, imagenes:["https://i.imgur.com/rY2RkRR.jpeg"], video:"", categoria:"Ropa", descripcion:"Gorro divertido para navidad", envioGratis:false, origen:"Ciudad del Carmen, Campeche", tiempoEntrega:"2-4 días", stock:15, imagenIndex:0}
-  { nombre:"Gorro Navideño", precio:90, imagenes:["https://i.imgur.com/rY2RkRR.jpeg"], video:"", categoria:"Ropa", descripcion:"Gorro divertido para navidad", envioGratis:false, origen:"Ciudad del Carmen, Campeche", tiempoEntrega:"2-4 días", stock:15, imagenIndex:0}
-  { nombre:"Gorro Navideño", precio:90, imagenes:["https://i.imgur.com/rY2RkRR.jpeg"], video:"", categoria:"Ropa", descripcion:"Gorro divertido para navidad", envioGratis:false, origen:"Ciudad del Carmen, Campeche", tiempoEntrega:"2-4 días", stock:15, imagenIndex:0}
-  { nombre:"Gorro Navideño", precio:90, imagenes:["https://i.imgur.com/rY2RkRR.jpeg"], video:"", categoria:"Ropa", descripcion:"Gorro divertido para navidad", envioGratis:false, origen:"Ciudad del Carmen, Campeche", tiempoEntrega:"2-4 días", stock:15, imagenIndex:0}
-  { nombre:"Gorro Navideño", precio:90, imagenes:["https://i.imgur.com/rY2RkRR.jpeg"], video:"", categoria:"Ropa", descripcion:"Gorro divertido para navidad", envioGratis:false, origen:"Ciudad del Carmen, Campeche", tiempoEntrega:"2-4 días", stock:15, imagenIndex:0}
-  
+// Lista inicial de productos
+let productos = [
+  { nombre:"Playera Cuidado con el Perro", precio:250, imagen:"imagenes/playera.jpg", descripcion:"Playera original talla M", envioGratis:true, origen:"CDMX" },
+  { nombre:"Jeans Azul", precio:400, imagen:"imagenes/jeans.jpg", descripcion:"Jeans original talla 32", envioGratis:false, origen:"Monterrey" }
 ];
 
-let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+let carrito = [];
 let editIndex = null;
-const miNumero = "529383858069";
 
-function guardarLocal() {
-  if(!modoPublico) localStorage.setItem("productos", JSON.stringify(productos));
-  cargarCategorias();
+// Funciones de visualización
+function mostrarCatalogo() {
+  document.getElementById("catalogo").style.display="grid";
+  document.getElementById("carrito").style.display="none";
+  document.getElementById("admin").style.display="none";
+  renderizarCatalogo();
 }
-function guardarCarrito() { localStorage.setItem("carrito", JSON.stringify(carrito)); }
-
-function cargarCategorias(){
-  const select = document.getElementById("filtroCat");
-  const categorias = [...new Set(productos.map(p=>p.categoria))];
-  select.innerHTML = `<option value="">Todas</option>`;
-  categorias.forEach(c=>select.innerHTML += `<option value="${c}">${c}</option>`);
+function mostrarCarrito() {
+  document.getElementById("catalogo").style.display="none";
+  document.getElementById("carrito").style.display="block";
+  document.getElementById("admin").style.display="none";
+  renderizarCarrito();
+}
+function mostrarAdmin() {
+  document.getElementById("catalogo").style.display="none";
+  document.getElementById("carrito").style.display="none";
+  document.getElementById("admin").style.display="block";
 }
 
-function mostrarCatalogo(lista=productos){
+// Renderizar catálogo
+function renderizarCatalogo() {
   const cont = document.getElementById("catalogo");
   cont.innerHTML = "";
-  lista.forEach((p,index)=>{
-    cont.innerHTML += `
-      <div class='item'>
-        ${p.imagenes && p.imagenes.length ? `<img src="${p.imagenes[p.imagenIndex||0]}" id="imgProd${index}" />` : ""}
-        ${p.imagenes && p.imagenes.length>1 ? `<button class="carousel-btn" onclick="prevImagen(${index})">◀</button><button class="carousel-btn" onclick="nextImagen(${index})">▶</button>`:""}
-        ${p.video ? `<iframe src="${p.video}" frameborder="0" allowfullscreen></iframe>` : ""}
-        <h3>${p.nombre}</h3>
-        <p>$${p.precio} MXN</p>
-        <p>${p.descripcion}</p>
-        ${p.envioGratis ? "<p style='color:green;'><b>¡Envío gratis!</b></p>" : ""}
-        <p><b>Desde:</b> ${p.origen}</p>
-        <p><b>Tiempo de entrega:</b> ${p.tiempoEntrega}</p>
-        <p><b>Categoría:</b> ${p.categoria}</p>
-        ${p.stock ? `<p><b>Stock disponible:</b> ${p.stock}</p>` : ""}
-        <button onclick="agregarAlCarrito(${index})">Agregar al carrito</button>
-        ${!modoPublico ? `<button class='edit-btn' onclick="editarProducto(${index})">Editar</button>`:""}
-        ${!modoPublico ? `<button class='delete-btn' onclick="eliminarProducto(${index})">Eliminar</button>`:""}
-      </div>
-    `;
+  productos.forEach((p,index)=>{
+    cont.innerHTML += `<div class="item">
+      <img src="${p.imagen}" alt="${p.nombre}">
+      <h3>${p.nombre}</h3>
+      <p>${p.descripcion}</p>
+      <p>Precio: $${p.precio}</p>
+      <p>Origen: ${p.origen}</p>
+      ${p.envioGratis? "<p style='color:green;'><b>¡Envío gratis!</b></p>":""}
+      <button onclick="agregarAlCarrito(${index})">Agregar al carrito</button>
+    </div>`;
   });
 }
 
-function prevImagen(i){
-  const p = productos[i];
-  p.imagenIndex = (p.imagenIndex-1 + p.imagenes.length) % p.imagenes.length;
-  mostrarCatalogo();
-}
-function nextImagen(i){
-  const p = productos[i];
-  p.imagenIndex = (p.imagenIndex+1) % p.imagenes.length;
-  mostrarCatalogo();
+// Carrito
+function agregarAlCarrito(index) {
+  let producto = {...productos[index], cantidad:1};
+  let existe = carrito.find(p=>p.nombre===producto.nombre);
+  if(existe) { existe.cantidad +=1; } else { carrito.push(producto); }
+  alert("Producto agregado al carrito");
 }
 
-function agregarProducto(){
-  if(modoPublico) return;
-  const n = document.getElementById("nombre").value;
-  const p = document.getElementById("precio").value;
-  const imgs = document.getElementById("imagenes").value.split(",").map(u=>u.trim());
-  const vid = document.getElementById("video").value;
-  const cat = document.getElementById("categoria").value;
-  const desc = document.getElementById("descripcion").value;
-  const origen = document.getElementById("origen").value;
-  const tiempo = document.getElementById("tiempoEntrega").value;
-  const stock = document.getElementById("stock") ? Number(document.getElementById("stock").value) : undefined;
-  const envio = document.getElementById("envioGratis").checked;
-
-  if(!n || !p || !imgs.length || !cat) return alert("Completa todos los campos");
-
-  if(editIndex !== null){
-    productos[editIndex] = {nombre:n, precio:Number(p), imagenes:imgs, video:vid, categoria:cat, descripcion:desc, envioGratis:envio, origen:origen, tiempoEntrega:tiempo, stock:stock, imagenIndex:0};
-    editIndex=null;
-  }else{
-    productos.push({nombre:n, precio:Number(p), imagenes:imgs, video:vid, categoria:cat, descripcion:desc, envioGratis:envio, origen:origen, tiempoEntrega:tiempo, stock:stock, imagenIndex:0});
-  }
-  guardarLocal(); mostrarCatalogo();
-}
-
-function editarProducto(i){
-  const p = productos[i];
-  document.getElementById("nombre").value = p.nombre;
-  document.getElementById("precio").value = p.precio;
-  document.getElementById("imagenes").value = p.imagenes.join(",");
-  document.getElementById("video").value = p.video || "";
-  document.getElementById("categoria").value = p.categoria;
-  document.getElementById("descripcion").value = p.descripcion;
-  document.getElementById("origen").value = p.origen;
-  document.getElementById("tiempoEntrega").value = p.tiempoEntrega;
-  document.getElementById("stock").value = p.stock || "";
-  document.getElementById("envioGratis").checked = p.envioGratis;
-  editIndex=i;
-}
-
-function eliminarProducto(i){
-  productos.splice(i,1);
-  guardarLocal(); mostrarCatalogo();
-}
-
-function filtrarProductos(){
-  const t = document.getElementById("busqueda").value.toLowerCase();
-  const cat = document.getElementById("filtroCat").value;
-  const filtrados = productos.filter(p=>p.nombre.toLowerCase().includes(t)&&(cat===""||p.categoria===cat));
-  mostrarCatalogo(filtrados);
-}
-
-function agregarAlCarrito(i){
-  const prod = productos[i];
-  if(prod.stock && carrito.filter(c=>c.nombre===prod.nombre).reduce((a,b)=>a+b.cantidad,0) >= prod.stock){
-    return alert("No hay suficiente stock disponible");
-  }
-  const existe = carrito.find(item=>item.nombre===prod.nombre);
-  if(existe) existe.cantidad++;
-  else carrito.push({...prod, cantidad:1});
-  guardarCarrito(); actualizarCarrito();
-}
-
-function eliminarDelCarrito(i){ carrito.splice(i,1); guardarCarrito(); actualizarCarrito(); }
-function cambiarCantidad(i,tipo){ 
-  if(tipo==="+") carrito[i].cantidad++; 
-  if(tipo==="-") carrito[i].cantidad=Math.max(1,carrito[i].cantidad-1); 
-  guardarCarrito(); actualizarCarrito(); 
-}
-
-function actualizarCarrito(){
-  const lista = document.getElementById("lista-carrito");
-  lista.innerHTML="";
-  let total=0;
+function renderizarCarrito() {
+  const cont = document.getElementById("carrito");
+  cont.innerHTML = "<h2>Carrito</h2>";
+  if(carrito.length===0){ cont.innerHTML += "<p>Carrito vacío</p>"; return; }
+  let total = 0;
   carrito.forEach((p,index)=>{
-    const sub=p.precio*p.cantidad;
-    total+=sub;
-    lista.innerHTML+=`
-      <li>${p.nombre} - $${p.precio} x ${p.cantidad} = $${sub}
-        <div class='cantidad-box'>
-          <button onclick="cambiarCantidad(${index}, '-')">-</button>
-          <span>${p.cantidad}</span>
-          <button onclick="cambiarCantidad(${index}, '+')">+</button>
-          <button class='remove-btn' onclick="eliminarDelCarrito(${index})">X</button>
-        </div>
-      </li>
-    `;
+    let sub = p.precio*p.cantidad; total+=sub;
+    cont.innerHTML += `<li>${p.nombre} - $${p.precio} x ${p.cantidad} = $${sub}
+      <div class='cantidad-box'>
+        <button onclick="cambiarCantidad(${index}, '-')">-</button>
+        <span>${p.cantidad}</span>
+        <button onclick="cambiarCantidad(${index}, '+')">+</button>
+        <button class='remove-btn' onclick="eliminarDelCarrito(${index})">X</button>
+      </div>
+    </li>`;
   });
-  document.getElementById("total").textContent=total;
-
-  const textoPago=encodeURIComponent(
-    carrito.map(p=>`${p.nombre} x ${p.cantidad} = $${p.precio*p.cantidad}`).join("\n")+`\nTotal: $${total}\nHe realizado el pago y envío comprobante`
-  );
-  document.getElementById("whatsappPago").href=`https://wa.me/${miNumero}?text=${textoPago}`;
+  cont.innerHTML += `<p><b>Total: $<span id="total">${total}</span></b></p>`;
 }
 
-if(modoPublico){ 
-  document.getElementById("admin").style.display="none"; 
-  document.getElementById("bannerPublico").innerHTML=`<div class='publico-banner'>Vista para clientes</div>`;
+// Carrito helpers
+function cambiarCantidad(index,op) {
+  if(op==='-'){ carrito[index].cantidad-=1; if(carrito[index].cantidad<=0) carrito.splice(index,1); }
+  else{ carrito[index].cantidad+=1; }
+  renderizarCarrito();
+}
+function eliminarDelCarrito(index){ carrito.splice(index,1); renderizarCarrito(); }
+
+// Admin
+function agregarProducto() {
+  const n=document.getElementById("nombre").value;
+  const p=document.getElementById("precio").value;
+  const img=document.getElementById("imagen").value;
+  const cat=document.getElementById("categoria").value;
+  const desc=document.getElementById("descripcion").value;
+  const origen=document.getElementById("origen").value;
+  const envio=document.getElementById("envioGratis").checked;
+  if(!n||!p||!img||!cat) return alert("Completa todos los campos");
+  if(editIndex!==null){
+    productos[editIndex]={nombre:n,precio:Number(p),imagen:img,categoria:cat,descripcion:desc,envioGratis:envio,origen:origen};
+    editIndex=null;
+  } else {
+    productos.push({nombre:n,precio:Number(p),imagen:img,categoria:cat,descripcion:desc,envioGratis:envio,origen:origen});
+  }
+  renderizarCatalogo();
+  alert("Producto agregado/actualizado");
 }
 
-cargarCategorias(); mostrarCatalogo(); actualizarCarrito();
+// Inicial
+mostrarCatalogo();
 </script>
 </body>
 </html>
-
-
