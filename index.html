@@ -78,8 +78,16 @@ const params = new URLSearchParams(window.location.search);
 const modoPublico = params.get("vista")==="catalogo";
 
 let productos = JSON.parse(localStorage.getItem("productos")) || [
-  { nombre:"Sudadera Navideña", precio:250, imagenes:["https://i.imgur.com/Z7QnJkP.jpeg","https://i.imgur.com/rY2RkRR.jpeg"], video:"", categoria:"Ropa", descripcion:"Cómoda sudadera con diseño navideño", envioGratis:true, origen:"Ciudad del Carmen, Campeche", tiempoEntrega:"3-5 días", stock:10, imagenIndex:0},
+  { nombre:"10000mah banco de energia multifuncional", precio:100, imagenes:["https://down-mx.img.susercontent.com/file/mx-11134258-7r98o-lx8xoaaiezyj82, https://down-mx.img.susercontent.com/file/mx-11134207-81z1k-mfuvuqkg5n2ce5.webp, https://down-mx.img.susercontent.com/file/mx-11134207-81z1k-mfuw5tzqpjbba6.webp"], video:"", categoria:"electronico", descripcion:"fuente de energia portatil", envioGratis:true, origen:"Mexico", tiempoEntrega:"5-7 días", stock:11, imagenIndex:0},
   { nombre:"Gorro Navideño", precio:90, imagenes:["https://i.imgur.com/rY2RkRR.jpeg"], video:"", categoria:"Ropa", descripcion:"Gorro divertido para navidad", envioGratis:false, origen:"Ciudad del Carmen, Campeche", tiempoEntrega:"2-4 días", stock:15, imagenIndex:0}
+  { nombre:"Gorro Navideño", precio:90, imagenes:["https://i.imgur.com/rY2RkRR.jpeg"], video:"", categoria:"Ropa", descripcion:"Gorro divertido para navidad", envioGratis:false, origen:"Ciudad del Carmen, Campeche", tiempoEntrega:"2-4 días", stock:15, imagenIndex:0}
+  { nombre:"Gorro Navideño", precio:90, imagenes:["https://i.imgur.com/rY2RkRR.jpeg"], video:"", categoria:"Ropa", descripcion:"Gorro divertido para navidad", envioGratis:false, origen:"Ciudad del Carmen, Campeche", tiempoEntrega:"2-4 días", stock:15, imagenIndex:0}
+  { nombre:"Gorro Navideño", precio:90, imagenes:["https://i.imgur.com/rY2RkRR.jpeg"], video:"", categoria:"Ropa", descripcion:"Gorro divertido para navidad", envioGratis:false, origen:"Ciudad del Carmen, Campeche", tiempoEntrega:"2-4 días", stock:15, imagenIndex:0}
+  { nombre:"Gorro Navideño", precio:90, imagenes:["https://i.imgur.com/rY2RkRR.jpeg"], video:"", categoria:"Ropa", descripcion:"Gorro divertido para navidad", envioGratis:false, origen:"Ciudad del Carmen, Campeche", tiempoEntrega:"2-4 días", stock:15, imagenIndex:0}
+  { nombre:"Gorro Navideño", precio:90, imagenes:["https://i.imgur.com/rY2RkRR.jpeg"], video:"", categoria:"Ropa", descripcion:"Gorro divertido para navidad", envioGratis:false, origen:"Ciudad del Carmen, Campeche", tiempoEntrega:"2-4 días", stock:15, imagenIndex:0}
+  { nombre:"Gorro Navideño", precio:90, imagenes:["https://i.imgur.com/rY2RkRR.jpeg"], video:"", categoria:"Ropa", descripcion:"Gorro divertido para navidad", envioGratis:false, origen:"Ciudad del Carmen, Campeche", tiempoEntrega:"2-4 días", stock:15, imagenIndex:0}
+  { nombre:"Gorro Navideño", precio:90, imagenes:["https://i.imgur.com/rY2RkRR.jpeg"], video:"", categoria:"Ropa", descripcion:"Gorro divertido para navidad", envioGratis:false, origen:"Ciudad del Carmen, Campeche", tiempoEntrega:"2-4 días", stock:15, imagenIndex:0}
+  
 ];
 
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
@@ -239,4 +247,5 @@ cargarCategorias(); mostrarCatalogo(); actualizarCarrito();
 </script>
 </body>
 </html>
+
 
