@@ -14,7 +14,7 @@
   .card:hover { transform:translateY(-5px); }
 
   .carousel { position:relative; }
-  .carousel img { width:100%; height:220px; object-fit:contain; border-radius:10px; }
+  .carousel img { width: 100%; max-height: 180px; object-fit: contain; border-radius: 10px; }
   .btn-prev, .btn-next {
     position:absolute; top:50%; transform:translateY(-50%);
     background:rgba(0,0,0,0.5); color:#fff; border:none;
@@ -107,6 +107,7 @@
   <input id="pCategoria" placeholder="Categoría / Marca">
   <input id="pStock" placeholder="Stock disponible" type="number">
   <input id="pOrigen" placeholder="Origen (China, México, USA...)">
+  <input id="pTiempo" placeholder="Tiempo estimado de entrega">
   <label><input type="checkbox" id="pEnvio"> Envío gratis</label>
   <textarea id="pDesc" placeholder="Descripción"></textarea>
   <button id="btnGuardar" onclick="guardarProducto()">Guardar producto</button>
@@ -125,6 +126,7 @@ function guardarProducto(){
     categoria: pCategoria.value,
     stock: Number(pStock.value),
     origen: pOrigen.value,
+    tiempo: pTiempo.value,
     envio: pEnvio.checked,
     desc: pDesc.value
   };
@@ -156,6 +158,7 @@ function renderCatalogo(){
         <p><b>Marca:</b> ${p.categoria}</p>
         <p><b>Stock:</b> ${p.stock}</p>
         <p><b>Origen:</b> ${p.origen}</p>
+        <p><b>Entrega:</b> ${p.tiempo}</p>
         ${p.envio ? "<span style='color:green;font-weight:bold;'>✨ Envío gratis</span>" : ""}
 
         <button class='btn-agregar' onclick='agregarCarrito(${i})'>Agregar al carrito</button>
@@ -215,5 +218,6 @@ function finalizarPedido(){
 </script>
 </body>
 </html>
+
 
 
